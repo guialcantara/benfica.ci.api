@@ -6,6 +6,7 @@ COPY package.json yarn.lock ./
 
 COPY . .
 
+RUN yarn
 RUN yarn run build
 RUN yarn workspaces focus --production && yarn cache clean
 
