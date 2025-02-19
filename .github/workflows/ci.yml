@@ -22,3 +22,6 @@ jobs:
           node-version: ${{matrix.node}}
           cache: 'yarn'
       - run : yarn
+
+      - name: Build docker iamge
+        run: docker build -t benfica-ci-api:latest .
