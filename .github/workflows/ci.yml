@@ -23,5 +23,11 @@ jobs:
           cache: 'yarn'
       - run : yarn
 
+      - name: Generate tag
+        id: generate_tag
+        run: |
+          SHA=$(echo $GITHUB_SHA | head -c7)
+          echo "sha=$SHA" >> $GITHUB_OUTPUT
+
       - name: Build docker iamge
-        run: docker build -t benfica-ci-api:latest .
+        run: docker build -t benfica-ci-api:${{steps.generate_tag.outputs.sha}} .
