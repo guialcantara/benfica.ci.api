@@ -28,6 +28,15 @@ jobs:
         run: |
           SHA=$(echo $GITHUB_SHA | head -c7)
           echo "sha=$SHA" >> $GITHUB_OUTPUT
-
+      
+      - name: Login into the container registry
+        uses: docker/login-actions@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+      
       - name: Build docker iamge
-        run: docker build -t benfica-ci-api:${{steps.generate_tag.outputs.sha}} .
+        run: docker build -t guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}} .
+
+      - name: Push Image
+        run: docker push guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}}
