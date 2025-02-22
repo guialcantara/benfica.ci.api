@@ -43,22 +43,13 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-
-      # - name: Login into the container registry
-      #   uses: docker/login-action@v3
-      #   with:
-      #     username: ${{secrets.DOCKERHUB_USERNAME}}
-      #     password: ${{secrets.DOCKERHUB_TOKEN}}
-      
-      # - name: Build and Push
-      #   uses: docker/build-push-action@v6
-      #   with:
-      #     push: true
-      #     tags: guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}},guialcantara/benfica-ci-api:latest
-
-          
-      # - name: Build docker iamge
-      #   run: docker build -t guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}} .
+      - name: Build docker image
+        env:
+          REGISTRY: ${{steps.login-ecr.outputs.registry}} 
+          TAG: ${{steps.generate_tag.outputs.sha}}
+        run: |
+          docker build -t $REGISTRY/benfica-ci:$TAG .
+          docker push $REGISTRY/benfica-ci:$TAG
 
       # - name: Push Image
       #   run: docker push guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}}
