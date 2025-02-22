@@ -9,17 +9,17 @@ jobs:
   build:
     name: 'Build and Push'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: [18,20]
+    # strategy:
+    #   matrix:
+    #     node: [18,20]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup node | ${{matrix.node}}
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{matrix.node}}
+          node-version: 20
           cache: 'yarn'
       - run : yarn
 
@@ -35,8 +35,15 @@ jobs:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
       
-      - name: Build docker iamge
-        run: docker build -t guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}} .
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}},guialcantara/benfica-ci-api:latest
 
-      - name: Push Image
-        run: docker push guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}}
+          
+      # - name: Build docker iamge
+      #   run: docker build -t guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}} .
+
+      # - name: Push Image
+      #   run: docker push guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}}
