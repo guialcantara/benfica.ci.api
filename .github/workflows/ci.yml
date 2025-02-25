@@ -51,10 +51,13 @@ jobs:
         run: |
           docker build -t $REGISTRY/benfica-ci:$TAG .
           docker push $REGISTRY/benfica-ci:$TAG
+          docker tag $REGISTRY/benfica-ci:$TAG $REGISTRY/benfica-ci:latest
+          docker push $REGISTRY/benfica-ci:latest
           IMAGE=$(echo $REGISTRY/benfica-ci:$TAG )
           echo "image=$IMAGE" >> $GITHUB_OUTPUT
       
       - name: Deploy to App Runner
+        id: deploy-app-runner
         uses: awslabs/amazon-app-runner-deploy@main
         with:
           service: benfica-api
@@ -64,6 +67,7 @@ jobs:
           cpu: 1
           memory: 2
           port: 3000
+          wait-for-service-stability-seconds: 180
 
-      # - name: Push Image
-      #   run: docker push guialcantara/benfica-ci-api:${{steps.generate_tag.outputs.sha}}
+      - name: App Runner check
+        run: echo "App Runner running... ${{steps.deploy-app-runner.outputs.service-url}}"
